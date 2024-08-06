@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from evaluate import evaluate_engine
 import time
 
 def display_content(problems):
@@ -44,6 +45,8 @@ def display_content(problems):
     timer_label = tk.Label(timer_frame, text="10", font=("Helvetica", 48))
     timer_label.pack()
 
+    submit_button=tk.Button(root,text="Submit", command=evaluate_engine,anchor="center")
+    submit_button.pack(side=tk.BOTTOM,pady=30)
     
     root.after(1000, start_timer)
 
