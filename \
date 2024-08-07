@@ -46,7 +46,8 @@ def display_content(problems):
     timer_label = tk.Label(timer_frame, text="10", font=("Helvetica", 48))
     timer_label.pack()
 
-    submit_button=tk.Button(root,text="Submit", command=lambda :evaluate_engine(problems[0]['expected_output']),anchor="center")
+    arg_wrapper=partial(evaluate_engine,problems['expected_output'])
+    submit_button=tk.Button(root,text="Submit", command=arg_wrapper,anchor="center")
     submit_button.pack(side=tk.BOTTOM,pady=30)
     
     root.after(1000, start_timer)
