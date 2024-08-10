@@ -3,6 +3,7 @@ from tkinter import messagebox
 from evaluate import evaluate_engine
 import time
 
+
 def display_content(problems):
     def format_problem(problem):
         content = f"Title: {problem['title']}\n"
@@ -13,21 +14,56 @@ def display_content(problems):
         return content
 
     def start_timer():
+        nonlocal timer_running
         countdown = 5
-        while countdown > 0:
+        timer_running = True
+        while countdown > 0 and timer_running:
             timer_label.config(text=str(countdown))
             root.update()
             time.sleep(1)
             countdown -= 1
 
-        timer_label.pack_forget()
-        messagebox.showinfo("Time's Up!", "Time is over")
-        root.destroy()
+        if timer_running:  # Timer finished without being stopped
+            timer_label.pack_forget()
+            show_result_dialog("Time's Up!", None)
+
+    def show_result_dialog(title, result):
+        def on_next_button_click(problems):
+            display_content(problems)
+
+        def on_exit_button_click():
+            result_dialog.destroy()
+            root.destroy()
+
+        result_dialog = tk.Toplevel(root)
+        result_dialog.title(title)
+
+        if result is not None:
+            result_label = tk.Label(result_dialog, text=f"Evaluation Result: {
+                                    result}", font=("Helvetica", 16))
+            result_label.pack(pady=20, padx=20)
+        else:
+            result_label = tk.Label(
+                result_dialog, text="Time's Up!", font=("Helvetica", 16))
+            result_label.pack(pady=20, padx=20)
+
+        next_button = tk.Button(
+            result_dialog, text="Next", command=lambda: (on_next_button_click(problems)))
+        next_button.pack(pady=10)
+
+        exit_button = tk.Button(
+            result_dialog, text="Exit", command=on_exit_button_click)
+        exit_button.pack(pady=20)
 
     def on_start_button_click():
         start_button.config(state=tk.DISABLED)  # Disable the start button
         submit_button.config(state=tk.NORMAL)    # Enable the submit button
-        root.after(1000, start_timer)            # Start the timer after 1 second delay
+        # Start the timer after 1 second delay
+        root.after(1000, start_timer)
+
+    def on_submit_button_click(problems):
+        result = evaluate_engine(problems, 'expected_output')
+        show_result_dialog("Evaluation Result", result)
 
     root = tk.Tk()
     root.title("DSA CLI Window")
@@ -45,8 +81,8 @@ def display_content(problems):
     timer_label = tk.Label(timer_frame, text="10", font=("Helvetica", 48))
     timer_label.pack()
 
-    submit_button = tk.Button(root, text="Submit", command=lambda: evaluate_engine(
-        problems, 'expected_output'), state=tk.DISABLED)
+    submit_button = tk.Button(root, text="Submit", command=lambda: on_submit_button_click(
+        problems), state=tk.DISABLED)
     submit_button.pack(side=tk.BOTTOM, pady=30)
 
     start_button = tk.Button(root, text="Start", command=on_start_button_click)
@@ -57,8 +93,9 @@ def display_content(problems):
     content_height = content_frame.winfo_reqheight()
     timer_width = timer_frame.winfo_reqwidth()
     timer_height = timer_frame.winfo_reqheight()
-    
-    root.geometry(f"{content_width}x{content_height + timer_height + submit_button.winfo_height() + start_button.winfo_height()}")
+
+    root.geometry(f"{content_width}x{content_height + timer_height +
+                  submit_button.winfo_height() + start_button.winfo_height()}")
 
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -69,5 +106,8 @@ def display_content(problems):
     y = screen_height - window_height
 
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+    # Variable to track if the timer is running
+    timer_running = False
 
     root.mainloop()
