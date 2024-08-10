@@ -1,7 +1,9 @@
 import json
 import os
 import threading
-from window_lib import display_content
+# from window_lib import display_content
+from cli_lib import display_content
+import simpy
 import texteditor
 
 
