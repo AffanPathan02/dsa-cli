@@ -32,7 +32,7 @@ def display_content(problems):
         nonlocal timer_running
         while True:
             command = input(
-                "Enter 'start' to begin the timer or 'submit' to submit (only valid after starting): ").strip().lower()
+                "Enter 'start' to begin the timer or 'submit' to submit (only valid after starting):\n ").strip().lower()
             if command == 'start':
                 if timer_running:
                     print("Timer is already running.")
